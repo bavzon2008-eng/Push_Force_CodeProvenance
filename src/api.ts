@@ -137,6 +137,9 @@ export const api = {
     });
     return res.json();
   },
+  async searchMembers(query: string): Promise<{ success: boolean; members: User[] }> {
+  return fetchWithCache(`/api/members/search?q=${encodeURIComponent(query)}`);
+},
 
   // Directory
   async getMembers(): Promise<{ success: boolean; members: User[] }> {
@@ -166,6 +169,14 @@ export const api = {
     });
     return res.json();
   },
+  async deleteEvent(eventId: string): Promise<{ success: boolean; message?: string }> {
+  invalidateApiCache();
+  const res = await fetch(`/api/events/${eventId}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  return res.json();
+},
 
   // Projects
   async getProjects(): Promise<{ success: boolean; projects: Project[] }> {
@@ -181,6 +192,14 @@ export const api = {
     });
     return res.json();
   },
+  async deleteProject(projectId: string): Promise<{ success: boolean; message?: string }> {
+  invalidateApiCache();
+  const res = await fetch(`/api/projects/${projectId}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  return res.json();
+},
 
   async toggleLikeProject(projectId: string): Promise<{ success: boolean; liked?: boolean; likesCount?: number; project?: Project }> {
     invalidateApiCache();
@@ -210,6 +229,14 @@ export const api = {
     });
     return res.json();
   },
+  async deleteOpportunity(id: string): Promise<{ success: boolean; message?: string }> {
+  invalidateApiCache();
+  const res = await fetch(`/api/opportunities/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  return res.json();
+},
 
   // Resources
   async getResources(): Promise<{ success: boolean; resources: Resource[] }> {
@@ -225,6 +252,14 @@ export const api = {
     });
     return res.json();
   },
+  async deleteResource(id: string): Promise<{ success: boolean; message?: string }> {
+  invalidateApiCache();
+  const res = await fetch(`/api/resources/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  return res.json();
+},
 
   // Batch dashboard optimization
   async getDashboardSummary() {
