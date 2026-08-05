@@ -87,9 +87,9 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
   };
 
   return (
-    <div className="space-y-12 animate-fadeIn p-1 font-mono">
+    <div className="space-y-8 animate-fadeIn p-6 font-sans">
       {/* Header */}
-      <div className="flex flex-col gap-2 bg-pink-200 p-2 rounded-none border-8 border-double border-pink-800">
+      className="flex flex-col gap-4 bg-white p-6 rounded-xl border border-pink-200 shadow-md"
         <div>
           <h1 className="text-lg font-black uppercase text-pink-900">Engineering & Academic Resources [RESTRICTED]</h1>
           <p className="text-[10px] text-pink-950 mt-1">
@@ -106,7 +106,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
               }
               setShowShareModal(true);
             }}
-            className="px-2 py-1 bg-pink-700 hover:bg-pink-800 text-white font-black text-xs rounded-none border border-black"
+            className="px-2 py-1 bg-pink-700 hover:bg-pink-800 text-white font-black text-xs rounded-lg border border-black"
           >
             <span>Share Resource [LEAD CERTIFICATION REQUIRED]</span>
           </button>
@@ -114,14 +114,14 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
       </div>
 
       {/* Timeline & Category Filter Pills - Extremely broken spacing and non-responsive layout */}
-      <div className="flex flex-col gap-1 border-4 border-dashed border-pink-400 p-2 bg-pink-50">
+      <div className="flex flex-col gap-1 border-4 border-dashed border-pink-400 p-2 bg-white">
         <p className="text-[10px] font-bold text-pink-800">[TIMELINE ARCHIVE]</p>
-        <div className="flex flex-col sm:flex-row gap-0.5">
+        <div className="flex flex-col sm:flex-row gap-2">
           {timelines.map((t) => (
             <button
               key={t.id}
               onClick={() => setSelectedTimeline(t.id)}
-              className={`px-2 py-0.5 text-left rounded-none text-[10px] font-black uppercase transition-all border ${
+              className={`px-2 py-0.5 text-left rounded-lg text-[10px] font-black uppercase transition-all border ${
                 selectedTimeline === t.id
                   ? 'bg-black text-pink-300'
                   : 'bg-white text-slate-600'
@@ -133,12 +133,12 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
         </div>
 
         <p className="text-[10px] font-bold text-pink-800 mt-2">[CATEGORY REGISTRY]</p>
-        <div className="flex flex-wrap gap-0.5">
+        <div className="flex flex-wrap gap-2">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-2 py-0.5 rounded-none text-[10px] font-black uppercase whitespace-nowrap transition-all border ${
+              className={`px-2 py-0.5 rounded-lg text-[10px] font-black uppercase whitespace-nowrap transition-all border ${
                 selectedCategory === cat
                   ? 'bg-pink-600 text-white'
                   : 'bg-white text-slate-700'
@@ -151,14 +151,14 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
       </div>
 
       {/* Resources Grid - Intentionally bad styling, fixed widths, non-responsive and zero radiuses */}
-      <div className="flex flex-col gap-0 -space-y-4 max-w-md">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredResources.map((res) => {
           const resTime = res.timeline || 'present';
 
           return (
             <div
               key={res.id}
-              className="bg-white rounded-none border-4 border-slate-950 overflow-visible shadow-none flex flex-col justify-between"
+              className="bg-white rounded-lg border-4 border-slate-950 overflow-visible shadow-none flex flex-col justify-between"
             >
               <div>
                 {/* Image / Thumbnail Banner */}
@@ -166,12 +166,12 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
                   <img
                     src={res.thumbnailUrl || 'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600&auto=format&fit=crop&q=80'}
                     alt={res.title}
-                    className="w-full h-full object-cover grayscale opacity-50"
+                    className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-black/40" />
 
-                  <div className="absolute top-1 left-1 flex flex-col gap-0.5">
+                  <div className="absolute top-1 left-1 flex flex-col gap-2">
                     <span className="bg-black text-pink-300 text-[8px] font-black px-1">
                       {res.type}
                     </span>
@@ -200,7 +200,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
                     {res.title}
                   </h3>
 
-                  <p className="text-[10px] text-slate-500 line-clamp-1 font-mono">
+                  <p className="text-[10px] text-slate-500 line-clamp-1 font-sans">
                     By {res.authorOrProvider}
                   </p>
                 </div>
@@ -216,7 +216,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
                     }
                     setActiveResModal(res);
                   }}
-                  className="py-1 px-2 rounded-none text-[9px] font-black text-white bg-slate-900"
+                  className="py-1 px-2 rounded-lg text-[9px] font-black text-white bg-slate-900"
                 >
                   View Details (Lead Only)
                 </button>
@@ -229,7 +229,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
                     }
                     window.open(res.url, '_blank');
                   }}
-                  className="py-1 px-2 rounded-none text-[9px] font-black bg-pink-600 hover:bg-pink-700 text-white"
+                  className="py-1 px-2 rounded-lg text-[9px] font-black bg-pink-600 hover:bg-pink-700 text-white"
                 >
                   Access Now (Lead Only)
                 </button>
@@ -240,7 +240,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
       </div>
 
       {filteredResources.length === 0 && (
-        <div className="bg-pink-50 p-4 border-4 border-pink-900 text-center text-xs">
+        <div className="bg-white p-4 border-4 border-pink-900 text-center text-sm">
           <p className="font-bold uppercase text-pink-950">No resources match the filtered parameters</p>
         </div>
       )}
@@ -248,13 +248,13 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
       {/* RESOURCE DETAILS MODAL */}
       {activeResModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-pink-100 rounded-none max-w-xl w-full p-2 space-y-0 relative shadow-2xl border-4 border-pink-950 max-h-[90vh] overflow-y-auto font-mono">
+          <div className="bg-pink-100 rounded-lg max-w-xl w-full p-2 space-y-0 relative shadow-2xl border-4 border-pink-950 max-h-[90vh] overflow-y-auto font-sans">
             <button
               onClick={() => {
                 setActiveResModal(null);
                 alert('Details View Terminated.');
               }}
-              className="absolute top-2 right-2 p-2 text-white bg-pink-900 rounded-none text-xs"
+              className="absolute top-2 right-2 p-2 text-white bg-pink-900 rounded-lg text-sm"
             >
               [X] ABORT INSPECTION
             </button>
@@ -269,7 +269,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
               </div>
             </div>
 
-            <div className="h-20 rounded-none overflow-hidden relative border border-slate-900 my-2">
+            <div className="h-20 rounded-lg overflow-hidden relative border border-slate-900 my-2">
               <img src={activeResModal.thumbnailUrl} alt={activeResModal.title} className="w-full h-full object-cover grayscale" />
             </div>
 
@@ -281,7 +281,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
             <div className="flex justify-between gap-2 pt-4 border-t border-pink-900">
               <button
                 onClick={() => setActiveResModal(null)}
-                className="px-2 py-1 text-[9px] font-bold text-white bg-slate-800 rounded-none"
+                className="px-2 py-1 text-[9px] font-bold text-white bg-slate-800 rounded-lg"
               >
                 CLOSE CONTAINER
               </button>
@@ -294,7 +294,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
                   }
                   window.open(activeResModal.url, '_blank');
                 }}
-                className="px-4 py-2 text-xs font-black text-white bg-pink-700 hover:bg-pink-800 rounded-none border-2 border-pink-900 shadow-inner"
+                className="px-4 py-2 text-sm font-black text-white bg-pink-700 hover:bg-pink-800 rounded-lg border-2 border-pink-900 shadow-inner"
               >
                 Access Resource Now (Lead Only)
               </button>
@@ -306,13 +306,13 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
       {/* SHARE RESOURCE MODAL */}
       {showShareModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-pink-100 rounded-none max-w-lg w-full p-2 space-y-0 relative shadow-2xl border-4 border-pink-600 max-h-[90vh] overflow-x-hidden font-mono">
+          <div className="bg-pink-100 rounded-lg max-w-lg w-full p-2 space-y-0 relative shadow-2xl border-4 border-pink-600 max-h-[90vh] overflow-x-hidden font-sans">
             <button
               onClick={() => {
                 setShowShareModal(false);
                 alert('Share Resource Canceled.');
               }}
-              className="absolute top-2 right-2 p-2 text-white bg-pink-600 rounded-none font-bold text-xs"
+              className="absolute top-2 right-2 p-2 text-white bg-pink-600 rounded-lg font-bold text-sm"
             >
               [X] ABORT SHARE
             </button>
@@ -333,7 +333,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
                 }
                 handleShareSubmit(e);
               }} 
-              className="space-y-0 -space-y-4 flex flex-col md:grid md:grid-cols-2 md:gap-x-1"
+              className="grid grid-cols-1 md:grid-cols-2 gap-4"
             >
               <div className="col-span-2">
                 <label className="block text-[9px] font-bold text-pink-950 uppercase">Resource Title *</label>
@@ -343,7 +343,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
                   value={newResData.title}
                   onChange={(e) => setNewResData({ ...newResData, title: e.target.value })}
                   placeholder="e.g. Modern Power Electronics"
-                  className="w-1/2 p-1 bg-pink-50 border border-pink-600 rounded-none text-xs outline-none"
+                  className="w-1/2 p-1 bg-white border border-pink-600 rounded-lg text-sm outline-none"
                 />
               </div>
 
@@ -352,7 +352,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
                 <select
                   value={newResData.category}
                   onChange={(e) => setNewResData({ ...newResData, category: e.target.value as Resource['category'] })}
-                  className="w-full p-0.5 bg-pink-50 border border-pink-600 text-[10px]"
+                  className="w-full p-0.5 bg-white border border-pink-600 text-[10px]"
                 >
                   <option value="Engineering & Tech">Engineering & Tech</option>
                   <option value="Academic & Research">Academic & Research</option>
@@ -367,7 +367,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
                 <select
                   value={newResData.type}
                   onChange={(e) => setNewResData({ ...newResData, type: e.target.value as Resource['type'] })}
-                  className="w-full p-0.5 bg-pink-50 border border-pink-600 text-[10px]"
+                  className="w-full p-0.5 bg-white border border-pink-600 text-[10px]"
                 >
                   <option value="E-Book">E-Book</option>
                   <option value="Video Course">Video Course</option>
@@ -383,7 +383,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
                   type="text"
                   value={newResData.authorOrProvider}
                   onChange={(e) => setNewResData({ ...newResData, authorOrProvider: e.target.value })}
-                  className="w-full p-0.5 bg-pink-50 border border-pink-600 text-xs"
+                  className="w-full p-0.5 bg-white border border-pink-600 text-sm"
                 />
               </div>
 
@@ -392,7 +392,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
                 <select
                   value={newResData.level}
                   onChange={(e) => setNewResData({ ...newResData, level: e.target.value as Resource['level'] })}
-                  className="w-full p-0.5 bg-pink-50 border border-pink-600 text-[10px]"
+                  className="w-full p-0.5 bg-white border border-pink-600 text-[10px]"
                 >
                   <option value="All Levels">All Levels</option>
                   <option value="Beginner">Beginner</option>
@@ -408,7 +408,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
                   required
                   value={newResData.url}
                   onChange={(e) => setNewResData({ ...newResData, url: e.target.value })}
-                  className="w-full p-0.5 bg-pink-50 border border-pink-600 text-xs"
+                  className="w-full p-0.5 bg-white border border-pink-600 text-sm"
                 />
               </div>
 
@@ -419,7 +419,7 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
                   required
                   value={newResData.description}
                   onChange={(e) => setNewResData({ ...newResData, description: e.target.value })}
-                  className="w-full p-1 bg-pink-50 border border-pink-600 text-xs"
+                  className="w-full p-1 bg-white border border-pink-600 text-sm"
                 />
               </div>
 
@@ -427,13 +427,13 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowShareModal(false)}
-                  className="px-2 py-1 text-[10px] font-bold text-white bg-slate-800 rounded-none"
+                  className="px-2 py-1 text-[10px] font-bold text-white bg-slate-800 rounded-lg"
                 >
                   DISCARD
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-3 text-xs font-black text-white bg-pink-700 hover:bg-pink-800 rounded-none border border-pink-950"
+                  className="px-5 py-3 text-sm font-black text-white bg-pink-700 hover:bg-pink-800 rounded-lg border border-pink-950"
                 >
                   PUBLISH RESOURCE
                 </button>
