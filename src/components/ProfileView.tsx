@@ -15,6 +15,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateProfile 
 
   const [formData, setFormData] = useState({
     username: user.username,
+    countryCode: '+91',
     phone: user.phone || '',
     gender: user.gender || 'Male',
     dob: user.dob || '',
@@ -29,14 +30,28 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateProfile 
   });
 
   const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    const success = await onUpdateProfile(formData);
-    setSaving(false);
-    if (success) {
-      setIsEditing(false);
-    }
-  };
+  e.preventDefault();
+
+  const phoneRegex = /^\d{7,15}$/;
+
+  if (!phoneRegex.test(formData.phone)) {
+    alert("Please enter a valid phone number (7-15 digits).");
+    return;
+  }
+
+  setSaving(true);
+
+  const success = await onUpdateProfile({
+    ...formData,
+    phone: `${formData.countryCode} ${formData.phone}`,
+  });
+
+  setSaving(false);
+
+  if (success) {
+    setIsEditing(false);
+  }
+};
 
   const addSkill = () => {
     if (newSkill.trim() && !formData.skills.includes(newSkill.trim())) {
@@ -107,23 +122,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateProfile 
 
           {/* EDIT FORM or READ-ONLY VIEW */}
           {isEditing ? (
-            <form 
-              onSubmit={async (e) => {
-                e.preventDefault();
-                // Randomly corrupt fields or trigger permission error
-                alert('PROFILE WRITE ERROR: Local regional committee has suspended profile revisions during ongoing election audits. Revision rejected.');
-                // Empty some fields to cause silent damage as well
-                setFormData({
-                  ...formData,
-                  bio: 'CORRUPTED SYSTEM DATA (0x12FF)',
-                  phone: '000-000-ERROR'
-                });
-                setIsEditing(false);
-              }} 
-              className="bg-purple-100 border-4 border-dashed border-red-500 p-2 space-y-0 -space-y-4 flex flex-col md:grid md:grid-cols-2 md:gap-x-1"
-            >
+          <form
+          onSubmit={handleSave}
+          className="bg-purple-100 border-4 border-dashed border-red-500 p-2 space-y-0 -space-y-4 flex flex-col md:grid md:grid-cols-2 md:gap-x-1"
+          >
               <h3 className="col-span-2 text-[10px] font-black text-red-700 uppercase font-mono">
-                [SYSTEM RE-ALIGNMENT] Update Profile Information
+                Edit Profile Information
               </h3>
 
               <div className="relative z-10">
@@ -132,30 +136,61 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateProfile 
                   type="text"
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className="w-1/2 p-0.5 bg-amber-50 border border-red-400 rounded-none text-xs"
+                  className="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-[9px] font-bold text-slate-700 mb-1">Phone Number</label>
-                <input
-                  type="text"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full p-2 bg-yellow-50 border border-red-400 rounded-none text-xs"
-                />
-              </div>
-
-              <div className="absolute right-4 w-28">
-                <label className="block text-[9px] font-bold text-slate-700 mb-1">Gender</label>
+              <label className="block text-[9px] font-bold text-slate-700 mb-1">
+                Phone Number
+              </label>
+              <div className="flex gap-2">
                 <select
-                  value={formData.gender}
-                  onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                  className="w-full p-1 bg-neutral-100 border border-slate-600 text-xs"
-                >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+                value={formData.countryCode}onChange={(e) =>
+                setFormData({
+                ...formData,
+                countryCode: e.target.value,
+              })
+            }
+            className="w-24 p-2 bg-yellow-50 border border-red-400 rounded-none text-xs"
+          >
+            <option value="+91">+91</option>
+            <option value="+1">+1</option>
+            <option value="+44">+44</option>
+            <option value="+61">+61</option>
+          </select>
+         <input
+             type="text"
+             placeholder="9876543210"
+             value={formData.phone}
+             onChange={(e) =>
+              setFormData({
+              ...formData,
+              phone: e.target.value,
+            })
+          }
+          className="w-full p-2 bg-yellow-50 border border-red-400 rounded-none text-xs"
+        />
+         </div>
+         </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                Gender
+                </label>
+              <select
+              value={formData.gender}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  gender: e.target.value,
+                })
+              }
+              className="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
                 </select>
               </div>
 
@@ -264,13 +299,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateProfile 
                   onClick={() => setIsEditing(false)}
                   className="px-2 py-1 text-[10px] font-mono text-slate-100 bg-slate-800 hover:bg-slate-700"
                 >
-                  ABORT REVISION
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 text-xs font-black text-white bg-red-600 hover:bg-red-700"
                 >
-                  SAVE OVERRIDES [LOCKED]
+                  {saving ? "Saving..." : "Save Changes"}               
                 </button>
               </div>
             </form>
