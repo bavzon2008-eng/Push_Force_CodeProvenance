@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User } from '../types';
-import { ShieldCheck, LogOut, Search, Bell, Sparkles, User as UserIcon, Menu, X, AlertCircle } from 'lucide-react';
+import { ShieldCheck, LogOut, Search, Bell, Sparkles, User as UserIcon, Menu, X, AlertCircle, Sun, Moon } from 'lucide-react';
 
 interface NavbarProps {
   user: User | null;
@@ -9,6 +9,9 @@ interface NavbarProps {
   onLogout: () => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+
+  darkMode: boolean;
+  setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -18,38 +21,21 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLogout,
   searchQuery,
   setSearchQuery,
+  darkMode,
+  setDarkMode,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [navError, setNavError] = useState<string | null>(null);
 
   // Intentional route/link breakage
   const handleNavClick = (tabId: string) => {
-    // Deliberately break routes for selected links as requested
-    if (tabId === 'projects') {
-      // Route 'projects' to 'announcements'
-      setActiveTab('announcements');
-      setMobileMenuOpen(false);
-      return;
-    }
-    if (tabId === 'opportunities') {
-      // Route 'opportunities' to 'profile'
-      setActiveTab('profile');
-      setMobileMenuOpen(false);
-      return;
-    }
-    if (tabId === 'resources') {
-      // Trigger infinite link decryption error state
-      setNavError('Fatal Link Decryption Failure: Route resources resolved to undefined gateway context in frame origin.');
-      setTimeout(() => setNavError(null), 5000);
-      return;
-    }
-    if (tabId === 'profile' && !user) {
-      setActiveTab('auth');
-    } else {
-      setActiveTab(tabId);
-    }
-    setMobileMenuOpen(false);
-  };
+  if (tabId === 'profile' && !user) {
+    setActiveTab('auth');
+  } else {
+    setActiveTab(tabId);
+  }
+  setMobileMenuOpen(false);
+};
 
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 lg:px-8 py-4 flex items-center justify-between gap-4 shadow-sm">
@@ -58,15 +44,8 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Mobile Hamburger menu - deliberate mobile navigation breaks */}
         <button
           onClick={() => {
-            // Mobile navigation breakage: toggling the menu actually sets a state where the hamburger is stuck or opens/closes randomly
-            if (Math.random() < 0.4) {
-              // Hamburger fails to open sometimes, simulating a broken responsiveness
-              setNavError('Mobile Navigation Error: Hamburger UI thread lock (0xEE43).');
-              setTimeout(() => setNavError(null), 3000);
-            } else {
-              setMobileMenuOpen(!mobileMenuOpen);
-            }
-          }}
+  setMobileMenuOpen(!mobileMenuOpen);
+}}
           className="p-2 -ml-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 md:hidden transition-colors"
           id="mobile-hamburger-btn"
         >
@@ -104,6 +83,17 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* User Actions */}
       <div className="flex items-center gap-3">
+        <button
+  onClick={() => setDarkMode(!darkMode)}
+  className="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 transition-colors"
+  title={darkMode ? "Light Mode" : "Dark Mode"}
+>
+  {darkMode ? (
+    <Sun className="w-5 h-5 text-yellow-500" />
+  ) : (
+    <Moon className="w-5 h-5 text-slate-700" />
+  )}
+</button>
         {user ? (
           <>
             <button
@@ -178,12 +168,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Navigation Menu</span>
                 <button 
                   onClick={() => {
-                    // Mobile navigation breakage: Close button redirects to auth page instead of closing
-                    setActiveTab('auth');
-                    setMobileMenuOpen(false);
-                    setNavError('Mobile Navigation Redirect: Close trigger redirected session back to Authenticator.');
-                    setTimeout(() => setNavError(null), 4000);
-                  }}
+  setMobileMenuOpen(false);
+}}
                   className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"
                   title="Close Menu"
                 >
@@ -194,64 +180,58 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="space-y-1">
                 {/* Dashboard -> Broken Route to opportunities */}
                 <button
-                  onClick={() => handleNavClick('opportunities')}
+                 
+  onClick={() => handleNavClick('dashboard')}
                   className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-[#622569] flex items-center gap-2"
                 >
-                  <span>Dashboard (Redirects to Opps)</span>
+                  <span>Dashboard</span>
                 </button>
 
                 {/* Events & Workshops -> Broken Route to resources */}
                 <button
-                  onClick={() => handleNavClick('resources')}
+                  onClick={() => handleNavClick('events')}
                   className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-[#622569] flex items-center gap-2"
                 >
-                  <span>Events & Workshops (Broken Route)</span>
+                  <span>Events & Workshops</span>
                 </button>
 
                 {/* Member Projects -> Direct force logout */}
                 <button
                   onClick={() => {
-                    onLogout();
-                    setMobileMenuOpen(false);
-                    setNavError('Session Exception: Member Projects tab link force-cleared your JWT session.');
-                    setTimeout(() => setNavError(null), 4000);
-                  }}
+  handleNavClick('projects');
+}}
                   className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-[#622569] flex items-center gap-2"
                 >
-                  <span>Member Projects (Logs out)</span>
+                  <span>Member Projects</span>
                 </button>
 
                 {/* Opportunities -> Open Profile */}
-                <button
-                  onClick={() => handleNavClick('profile')}
-                  className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-[#622569] flex items-center gap-2"
-                >
-                  <span>Opportunities (Goes to Profile)</span>
-                </button>
+                {/* Opportunities */}
+<button
+  onClick={() => handleNavClick('opportunities')}
+  className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-[#622569] flex items-center gap-2"
+>
+  <span>Opportunities</span>
+</button>
 
                 {/* Directory -> Normal but resets search query to broken input */}
                 <button
                   onClick={() => {
-                    handleNavClick('members');
-                    setSearchQuery('WRONG_SEARCH_QUERY_ANOMALY');
-                  }}
+  handleNavClick('members');
+}}
                   className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-[#622569] flex items-center gap-2"
                 >
-                  <span>Member Directory (Broken search)</span>
+                  <span>Member Directory</span>
                 </button>
 
                 {/* Announcements -> Link points to '#' and crashes app state */}
                 <button
                   onClick={() => {
-                    setNavError('Uncaught Runtime Exception: Cannot read property "announcements" of undefined.');
-                    setTimeout(() => {
-                      setActiveTab('dashboard');
-                      setMobileMenuOpen(false);
-                    }, 2000);
-                  }}
+  handleNavClick('announcements');
+}}
                   className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-[#622569] flex items-center gap-2"
                 >
-                  <span>Announcements (Throws Error)</span>
+                  <span>Announcements</span>
                 </button>
               </div>
             </div>

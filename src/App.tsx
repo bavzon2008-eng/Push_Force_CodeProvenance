@@ -20,6 +20,7 @@ export default function App() {
   const [authChecking, setAuthChecking] = useState(true);
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
+  const [darkMode, setDarkMode] = useState(false);
 
   // Data state from Express backend
   const [events, setEvents] = useState<Event[]>([]);
@@ -310,17 +311,25 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900 font-sans overflow-x-hidden">
+    <div
+  className={`min-h-screen flex flex-col font-sans overflow-x-hidden ${
+    darkMode
+      ? "bg-slate-900 text-white"
+      : "bg-slate-50 text-slate-900"
+  }`}
+>
       
       {/* Navbar */}
       <Navbar
-        user={currentUser}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onLogout={handleLogout}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
+  user={currentUser}
+  activeTab={activeTab}
+  setActiveTab={setActiveTab}
+  onLogout={handleLogout}
+  searchQuery={searchQuery}
+  setSearchQuery={setSearchQuery}
+  darkMode={darkMode}
+  setDarkMode={setDarkMode}
+/>
 
       {/* Main Body */}
       <div className="flex flex-1 relative">
