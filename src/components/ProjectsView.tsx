@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Project, User } from '../types';
-import { Github, ExternalLink, Star, PlusCircle, Search, Sparkles, X, Code2 } from 'lucide-react';
+import { Github, ExternalLink, Star, PlusCircle, Sparkles, X } from 'lucide-react';
 
 interface ProjectsViewProps {
   projects: Project[];
@@ -21,8 +21,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
   const [selectedTimeline, setSelectedTimeline] = useState<'all' | 'present' | 'past' | 'future'>('all');
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
-  // New Project State
-  const [newProjData, setNewProjData] = useState({
+  const emptyProjData = {
     title: '',
     tagline: '',
     description: '',
@@ -33,7 +32,9 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
     imageUrl: '',
     status: 'Active' as 'Active' | 'Completed' | 'Research',
     timeline: 'present' as 'past' | 'present' | 'future',
-  });
+  };
+
+  const [newProjData, setNewProjData] = useState(emptyProjData);
 
   const domains = ['All', 'AI / ML', 'Web Development', 'IoT & Embedded', 'Robotics', 'Cybersecurity', 'Mobile App'];
   const timelines: { id: 'all' | 'present' | 'past' | 'future'; label: string }[] = [
@@ -56,6 +57,10 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
     return matchesDomain && matchesTimeline && matchesSearch;
   });
 
+  const closeModal = () => {
+    setShowSubmitModal(false);
+    setNewProjData(emptyProjData);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,17 +76,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
     });
 
     if (ok) {
-      setShowSubmitModal(false);
-      setNewProjData({
-        title: '',
-        tagline: '',
-        description: '',
-        domain: 'AI / ML',
-        githubUrl: '',
-        demoUrl: '',
-        teamMembersStr: '',
-        imageUrl: '',
-      });
+      closeModal();
     }
   };
 
@@ -198,7 +193,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                 <div className="p-6 space-y-3">
                   <h3 className="font-bold text-slate-900 text-lg font-['Poppins']">{proj.title}</h3>
                   <p className="text-xs font-medium text-slate-500 italic">{proj.tagline}</p>
-                  
+
                   {proj.achievements && (
                     <div className="bg-amber-50 border border-amber-200/80 rounded-xl p-2.5 flex items-center gap-2 text-amber-900 text-[11px] font-semibold">
                       <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
@@ -217,7 +212,6 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                   </div>
                 </div>
               </div>
-
 
               {/* Action Links Footer */}
               <div className="p-6 pt-0 border-t border-slate-100 flex items-center justify-between gap-3 mt-4">
@@ -251,66 +245,50 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
       {/* SUBMIT PROJECT MODAL */}
       {showSubmitModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-red-100 rounded-none max-w-lg w-full p-2 space-y-1 relative shadow-2xl max-h-[90vh] overflow-visible border-4 border-rose-600">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 relative shadow-2xl max-h-[90vh] overflow-y-auto border border-slate-200/80">
             <button
-              onClick={() => {
-                // Clicking close actually tries to submit the form in a broken way
-                setShowSubmitModal(false);
-                alert('Modal close operation was intercepted by a pending system thread. State remains uncommitted.');
-              }}
-              className="absolute -top-10 -right-2 p-3 text-white hover:text-rose-100 bg-rose-600 rounded-none font-bold"
+              onClick={closeModal}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
+              aria-label="Close"
             >
-              [X] ABORT
+              <X className="w-5 h-5" />
             </button>
 
-            <h2 className="text-sm font-extrabold text-red-700 uppercase tracking-widest font-mono">
-              [CRITICAL ERROR / EXCEPTION] Submit Member Project Showcase
-            </h2>
-            <p className="text-[10px] text-red-500 font-mono -mt-2">
-              Warning: System heap storage is running low. Fields might overlap.
-            </p>
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 font-['Poppins']">Submit Member Project</h2>
+              <p className="text-xs text-slate-500 mt-1">Share your build with the IET CONNECT chapter</p>
+            </div>
 
-            <form 
-              onSubmit={(e) => {
-                e.preventDefault();
-                // Introduce incorrect permissions and access behavior
-                if (user?.role !== 'broken_lead') {
-                  alert('SECURITY VIOLATION (0x44BC): Standard member roles are restricted from publishing innovation showcases. Only Emeritus Fellows or Chapter Overseers may submit. Contact the London board of directors.');
-                  return;
-                }
-                handleSubmit(e);
-              }} 
-              className="space-y-0 -space-y-4 md:grid md:grid-cols-2 md:gap-x-1 flex flex-col"
-            >
-              <div className="relative z-10">
-                <label className="block text-[10px] font-bold text-red-900 uppercase font-mono">Project Title *</label>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Project Title *</label>
                 <input
                   type="text"
                   required
                   value={newProjData.title}
                   onChange={(e) => setNewProjData({ ...newProjData, title: e.target.value })}
                   placeholder="e.g. Smart Solar Grid Monitor"
-                  className="w-1/2 p-1 bg-amber-50 border-2 border-red-500 rounded-none text-xs outline-none focus:bg-rose-100 font-mono"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#622569] focus:ring-1 focus:ring-[#622569] transition-colors"
                 />
               </div>
 
-              <div className="relative -top-2">
-                <label className="block text-[10px] font-bold text-red-900 uppercase font-mono">Short Tagline</label>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Short Tagline</label>
                 <input
                   type="text"
                   value={newProjData.tagline}
                   onChange={(e) => setNewProjData({ ...newProjData, tagline: e.target.value })}
                   placeholder="e.g. Real-time IoT solar efficiency dashboard"
-                  className="w-full p-2 bg-yellow-50 border border-amber-400 rounded-none text-xs outline-none font-mono"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#622569] focus:ring-1 focus:ring-[#622569] transition-colors"
                 />
               </div>
 
-              <div className="absolute right-0 w-24">
-                <label className="block text-[9px] font-bold text-red-900 uppercase font-mono">Domain & Field</label>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Domain & Field</label>
                 <select
                   value={newProjData.domain}
                   onChange={(e) => setNewProjData({ ...newProjData, domain: e.target.value as any })}
-                  className="w-full p-0.5 bg-neutral-100 border border-slate-600 rounded-none text-[10px] font-mono"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#622569] focus:ring-1 focus:ring-[#622569] transition-colors"
                 >
                   <option value="AI / ML">AI / ML</option>
                   <option value="Web Development">Web Development</option>
@@ -321,65 +299,65 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                 </select>
               </div>
 
-              <div className="col-span-2 pt-4">
-                <label className="block text-[10px] font-bold text-red-900 uppercase font-mono">Description *</label>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Description *</label>
                 <textarea
-                  rows={2}
+                  rows={3}
                   required
                   value={newProjData.description}
                   onChange={(e) => setNewProjData({ ...newProjData, description: e.target.value })}
                   placeholder="Explain architecture, technology stack, problem solved..."
-                  className="w-full p-1 bg-red-50 border-2 border-red-600 rounded-none text-xs outline-none font-mono"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#622569] focus:ring-1 focus:ring-[#622569] transition-colors resize-none"
                 />
               </div>
 
-              <div className="relative -mt-1">
-                <label className="block text-[10px] font-bold text-red-900 uppercase font-mono">GitHub Repository Link *</label>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">GitHub Repository Link *</label>
                 <input
                   type="url"
                   required
                   value={newProjData.githubUrl}
                   onChange={(e) => setNewProjData({ ...newProjData, githubUrl: e.target.value })}
                   placeholder="https://github.com/username/repository"
-                  className="w-full p-0.5 bg-slate-50 border border-slate-400 rounded-none text-xs"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#622569] focus:ring-1 focus:ring-[#622569] transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-red-900 uppercase font-mono">Live Demo Link (Optional)</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Live Demo Link (Optional)</label>
                 <input
                   type="url"
                   value={newProjData.demoUrl}
                   onChange={(e) => setNewProjData({ ...newProjData, demoUrl: e.target.value })}
                   placeholder="https://my-app.example.com"
-                  className="w-full p-0.5 bg-slate-50 border border-slate-400 rounded-none text-xs"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#622569] focus:ring-1 focus:ring-[#622569] transition-colors"
                 />
               </div>
 
-              <div className="col-span-2">
-                <label className="block text-[10px] font-bold text-red-900 uppercase font-mono">Team Members (Comma separated)</label>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Team Members (Comma separated)</label>
                 <input
                   type="text"
                   value={newProjData.teamMembersStr}
                   onChange={(e) => setNewProjData({ ...newProjData, teamMembersStr: e.target.value })}
                   placeholder="John, Sarah, Priya"
-                  className="w-full p-1 bg-red-50 border border-red-500 rounded-none text-xs"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#622569] focus:ring-1 focus:ring-[#622569] transition-colors"
                 />
               </div>
 
-              <div className="col-span-2 pt-2 flex justify-start gap-4 border-t border-red-300">
+              <div className="pt-2 flex justify-end gap-3 border-t border-slate-100">
                 <button
                   type="button"
-                  onClick={() => setShowSubmitModal(false)}
-                  className="px-2 py-1 text-[10px] font-bold text-slate-100 bg-slate-800 hover:bg-slate-700 rounded-none"
+                  onClick={closeModal}
+                  className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors mt-4"
                 >
-                  CANCEL SUBMISSION
+                  Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-3 text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-none shadow-inner border-2 border-rose-900"
+                  className="px-5 py-2.5 text-xs font-bold text-white bg-[#622569] hover:bg-[#9b51e0] rounded-xl shadow transition-colors mt-4"
                 >
-                  COMMIT PUBLISH [LOCKED]
+                  Publish Project
                 </button>
               </div>
             </form>
